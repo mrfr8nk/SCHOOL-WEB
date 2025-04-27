@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - St. Mary's High School</title>
+  <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/4476/4476871.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary-color: #003366; /* Navy blue */
+      --secondary-color: #000000;
+      --accent-color: #4d94ff; /* Light blue */
+      --light-color: #ffffff;
+      --dark-color: #121212;
+      --text-color: #333333;
+      --light-gray: #f5f5f5;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-color);
+      background-color: var(--light-color);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background-color: var(--light-color);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    
+    .logo-img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+    
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .logo-text span {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    .header-profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-left: 15px;
+      border: 2px solid var(--accent-color);
+      cursor: pointer;
+    }
+    
+    .mobile-menu-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--primary-color);
+      display: none;
+    }
+    
+    /* Page Header */
+    .page-header {
+      margin-top: 80px;
+      padding: 80px 0;
+      background: linear-gradient(rgba(0, 51, 102, 0.7), rgba(0, 51, 102, 0.7)), 
+                  url('https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80') no-repeat center center/cover;
+      color: var(--light-color);
+      text-align: center;
+    }
+    
+    .page-header h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: fadeInUp 1s ease;
+    }
+    
+    .page-header p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      animation: fadeInUp 1s ease 0.3s forwards;
+      opacity: 0;
+    }
+    
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .card {
+      background-color: var(--light-color);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      padding: 25px;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card h3 {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-icon {
+      font-size: 1.5rem;
+      color: var(--accent-color);
+      margin-right: 10px;
+    }
+    
+    /* Notices */
+    .notice-card {
+      background-color: var(--light-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .notice-card:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notice-card h4 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .notice-card small {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    /* Personal Info Section */
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      width: 80px;
+      height: 3px;
+      background-color: var(--accent-color);
+      transform: translateX(-50%);
+    }
+    
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 20px;
+      display: block;
+      border: 3px solid var(--accent-color);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent-color);
+      outline: none;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      background-color: var(--accent-color);
+      color: var(--light-color);
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn:hover {
+      background-color: #3a7bd5;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--accent-color);
+      color: var(--light-color);
+    }
+    
+    /* Results Section */
+    .report-card {
+      background-color: var(--light-color);
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .report-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .report-header p {
+      margin-bottom: 8px;
+    }
+    
+    .report-header strong {
+      color: var(--primary-color);
+    }
+    
+    .report-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    .report-card th {
+      background-color: var(--primary-color);
+      color: var(--light-color);
+      padding: 12px;
+      text-align: left;
+    }
+    
+    .report-card td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .chart-container {
+      width: 100%;
+      height: 400px;
+      margin: 30px 0;
+    }
+    
+    /* Performance History */
+    .performance-container {
+      background-color: var(--light-color);
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .performance-item {
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .performance-item:hover {
+      border-color: var(--accent-color);
+    }
+    
+    .performance-item h4 {
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+    
+    /* Updates Section */
+    .updates-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .update-count {
+      background-color: #ff4757;
+      color: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      margin-left: 10px;
+    }
+    
+    /* Side Menu */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100vh;
+      background-color: var(--light-color);
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: right 0.3s ease;
+      padding: 20px;
+    }
+    
+    .side-menu.active {
+      right: 0;
+    }
+    
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      cursor: pointer;
+    }
+    
+    .menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .menu-links a {
+      display: flex;
+      align-items: center;
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 12px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-links a i {
+      margin-right: 10px;
+      color: var(--accent-color);
+    }
+    
+    .menu-links a:hover,
+    .menu-links a.active {
+      background-color: #f0f7ff;
+      color: var(--primary-color);
+    }
+    
+    /* Overlay */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary-color);
+      color: var(--light-color);
+      padding: 30px 0;
+      text-align: center;
+    }
+    
+    .social-icons {
+      margin-bottom: 15px;
+    }
+    
+    .social-icons a {
+      color: var(--light-color);
+      margin: 0 10px;
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+    
+    .social-icons a:hover {
+      color: var(--accent-color);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .dashboard-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .page-header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .section-title h2 {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      
+      .button-container {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/4476/4476871.png" alt="St. Mary's Logo" class="logo-img">
+        <span class="logo-text">St. Mary's <span>High School</span></span>
+      </a>
+      <img id="smallProfilePic" src="https://i.postimg.cc/28gm27sy/2993763.png" alt="Profile Icon" class="header-profile-pic">
+      <button class="mobile-menu-btn" id="menuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hidden File Input for Profile Pic Update -->
+  <input type="file" id="file-input" accept="image/*" style="display:none;" />
+
+  <!-- Side Menu Overlay -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- Side Menu -->
+  <div class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <h3>Menu</h3>
+      <button class="close-btn" id="closeBtn">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="menu-links">
+      <a href="#dashboard-home" class="active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#personal-info"><i class="fas fa-user"></i> Personal Info</a>
+      <a href="#results"><i class="fas fa-chart-bar"></i> View Results</a>
+      <a href="#performance"><i class="fas fa-line-chart"></i> Performance History</a>
+      <a href="/ai"><i class="fas fa-comments"></i> Chat with AI</a>
+      <a href="#updates"><i class="fas fa-bell"></i> Current Updates <span id="updateCount" class="update-count"></span></a>
+      <a href="/report"><i class="fas fa-share"></i> Send Report</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Dashboard Home Section -->
+    <section id="dashboard-home" class="fade-in">
+      <div class="page-header">
+        <h1 id="welcomeMessage">Hello, Student</h1>
+        <p>Welcome to your student dashboard at St. Mary's High School</p>
+      </div>
+      
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3><i class="fas fa-school card-icon"></i> Grade & Class</h3>
+          <p id="currentGrade">Not set</p>
+        </div>
+        
+        <div class="card">
+          <h3><i class="fas fa-bullhorn card-icon"></i> Notices</h3>
+          <div id="notices">Loading notices...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Personal Info Section -->
+    <section id="personal-info" style="display: none;">
+      <div class="section-title">
+        <h2 id="personalInfoHeading">Personal Information</h2>
+      </div>
+      
+      <div class="form-group">
+        <label for="profile-pic">Profile Picture</label>
+        <img src="https://i.postimg.cc/28gm27sy/2993763.png" alt="Profile Picture" class="profile-pic" id="profilePic">
+        <input type="file" id="profilePicInput" accept="image/*">
+        <div id="uploadProgress" style="display:none; margin-top:10px; background: #eee; border-radius: 5px;">
+          <div id="progressBar" style="height: 10px; width: 0%; background: var(--accent-color); border-radius: 5px;"></div>
+        </div>
+        <div id="progressText" style="text-align:center; font-size:0.9rem; margin-top:5px;"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Enter your name">
+      </div>
+      
+      <div class="form-group">
+        <label for="surname">Surname</label>
+        <input type="text" id="surname" placeholder="Enter your surname">
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" placeholder="Enter your phone number">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+      
+      <div class="form-group">
+        <label for="parent-name">Parent Name</label>
+        <input type="text" id="parent-name" placeholder="Enter parent's name">
+      </div>
+      
+      <div class="form-group">
+        <label for="parent-phone">Parent Phone</label>
+        <input type="text" id="parent-phone" placeholder="Enter parent's phone">
+      </div>
+      
+      <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob">
+      </div>
+      
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select id="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="address">Address/Location</label>
+        <input type="text" id="address" placeholder="Enter your address">
+      </div>
+      
+      <div class="form-group">
+        <label for="form">Form</label>
+        <select id="form">
+          <option value="">Select Form</option>
+          <option value="Form 1">Form 1</option>
+          <option value="Form 2">Form 2</option>
+          <option value="Form 3">Form 3</option>
+          <option value="Form 4">Form 4</option>
+          <option value="Form 5">Form 5</option>
+          <option value="Form 6">Form 6</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="stream">Class</label>
+        <select id="stream">
+          <option value="">Select Class</option>
+          <option value="G">G</option>
+          <option value="W">W</option>
+          <option value="E">E</option>
+          <option value="Z">Z</option>
+          <option value="U">U</option>
+          <option value="Arts">Arts</option>
+          <option value="Commercials">Commercials</option>
+          <option value="Sciences">Sciences</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="healthIssues">Health Issues</label>
+        <textarea id="healthIssues" placeholder="Enter any health issues..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="additionalInfo">Additional Information</label>
+        <textarea id="additionalInfo" placeholder="Enter any additional information..."></textarea>
+      </div>
+      
+      <div class="button-container">
+        <button id="saveChangesBtn" class="btn">Save Changes</button>
+        <button id="changePasswordBtn" class="btn btn-outline">Reset Password</button>
+      </div>
+    </section>
+
+    <!-- View Results Section -->
+    <section id="results" style="display: none;">
+      <div class="section-title">
+        <h2>View Results</h2>
+      </div>
+      
+      <div id="resultsMessage"></div>
+      
+      <div class="report-card" id="reportCardContainer" style="display: none;">
+        <div class="report-header">
+          <p><strong>Name:</strong> <span id="reportName"></span></p>
+          <p><strong>Email:</strong> <span id="reportEmail"></span></p>
+          <p><strong>Year:</strong> <span id="reportYear"></span></p>
+          <p><strong>Term:</strong> <span id="reportTerm"></span></p>
+          <p><strong>Teacher:</strong> <span id="reportTeacherName"></span></p>
+          <p><strong>Comments:</strong> <span id="reportTeacherComments"></span></p>
+        </div>
+        
+        <h3>Report Card</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Marks</th>
+              <th>Grade</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody id="reportCardBody">
+            <!-- Report rows inserted here -->
+          </tbody>
+        </table>
+        
+        <button class="btn" onclick="exportPDF()">Download PDF</button>
+        
+        <div class="chart-container">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance History Section -->
+    <section id="performance" style="display: none;">
+      <div class="section-title">
+        <h2>Performance History</h2>
+      </div>
+      
+      <div id="performanceHistoryContainer" class="performance-container">
+        Loading performance history...
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="overallPerformanceChart"></canvas>
+      </div>
+      
+      <div id="analyticsMessage" style="margin: 20px 0; padding: 15px; background: #f0f7ff; border-radius: 5px;"></div>
+      
+      <button class="btn" onclick="exportPerformancePDF()">Download Performance History PDF</button>
+    </section>
+
+    <!-- Current Updates Section -->
+    <section id="updates" style="display: none;">
+      <div class="section-title">
+        <h2><i class="fas fa-bell"></i> Current Updates <span id="updateCount" class="update-count"></span></h2>
+      </div>
+      
+      <button id="markAllReadBtn" class="btn btn-outline" style="margin-bottom: 20px;">Mark all as read</button>
+      
+      <div id="updatesList">
+        <p>Loading updates...</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-tiktok"></i></a>
+    </div>
+    <p>&copy; 2025 St. Mary's High School. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase and App Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      signOut,
+      onAuthStateChanged,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      collection,
+      query,
+      orderBy,
+      getDocs,
+      limit,
+      arrayUnion,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAia39sa6pruiJ0kVmOz7FhoLXdgYs226w",
+      authDomain: "stmarys-db.firebaseapp.com",
+      projectId: "stmarys-db",
+      storageBucket: "stmarys-db.appspot.com",
+      messagingSenderId: "703545528908",
+      appId: "1:703545528908:web:95428a13eaafb572551ae9",
+      measurementId: "G-SCHJJMRCLS"
+    };
+
+    const appFirebase = initializeApp(firebaseConfig);
+    const auth = getAuth(appFirebase);
+    const db = getFirestore(appFirebase);
+    const storage = getStorage(appFirebase);
+
+    // Utility functions
+    function showMessage(message, type) {
+      Swal.fire({
+        icon: type === 'error' ? 'error' : 'success',
+        title: type === 'error' ? 'Error' : 'Success',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false
+      });
+    }
+
+    function capitalize(s) {
+      return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+    }
+
+    // Update performance chart
+    function updateChart(marksData) {
+      const canvas = document.getElementById("performanceChart");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const subjects = Object.keys(marksData);
+      const marks = subjects.map(subject => marksData[subject].marks);
+      if (window.performanceChartInstance) {
+        window.performanceChartInstance.destroy();
+      }
+      window.performanceChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: subjects,
+          datasets: [{
+            label: "Marks",
+            data: marks,
+            backgroundColor: "rgba(77, 148, 255, 0.5)",
+            borderColor: "rgba(77, 148, 255, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: { 
+          scales: { 
+            y: { 
+              beginAtZero: true,
+              max: 100
+            } 
+          } 
+        }
+      });
+    }
+
+    // Update overall performance chart
+    function updateOverallPerformanceChart(performanceData) {
+      const canvas = document.getElementById("overallPerformanceChart");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const labels = performanceData.map(item => `${item.term} ${item.year}`);
+      const averages = performanceData.map(item => item.average);
+      if (window.overallPerformanceChartInstance) {
+        window.overallPerformanceChartInstance.destroy();
+      }
+      window.overallPerformanceChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Average Marks",
+            data: averages,
+            backgroundColor: "rgba(77, 148, 255, 0.2)",
+            borderColor: "rgba(77, 148, 255, 1)",
+            borderWidth: 2,
+            fill: true
+          }]
+        },
+        options: { 
+          scales: { 
+            y: { 
+              beginAtZero: true,
+              max: 100
+            } 
+          } 
+        }
+      });
+    }
+
+    // Compute performance analytics
+    function computeAnalytics(records) {
+      let message = "";
+      if (records.length >= 2) {
+        records.sort((a, b) => {
+          if (a.year === b.year) {
+            return a.term.localeCompare(b.term);
+          }
+          return a.year - b.year;
+        });
+        const last = records[records.length - 1].average;
+        const previous = records[records.length - 2].average;
+        const change = last - previous;
+        if (change > 0) {
+          message = `Great job! Your average has increased by ${change.toFixed(1)}% compared to the previous term.`;
+        } else if (change < 0) {
+          message = `There is a drop of ${Math.abs(change).toFixed(1)}% in your average compared to the previous term. Let's focus on improving!`;
+        } else {
+          message = "Your performance is consistent with the previous term.";
+        }
+      } else {
+        message = "Not enough data to generate performance analytics.";
+      }
+      document.getElementById("analyticsMessage").textContent = message;
+    }
+
+    // Store performance record
+    async function storePerformanceRecord(studentData, average) {
+      const recordId = `${studentData.email}_${studentData.term || "NotSet"}_${studentData.year || "NotSet"}`;
+      const recordRef = doc(db, "performanceHistory", recordId);
+      const recordData = {
+        studentEmail: studentData.email,
+        term: studentData.term || "Not set",
+        year: studentData.year || "Not set",
+        month: new Date().getMonth() + 1,
+        average: average,
+        comments: studentData.teacherComments || ""
+      };
+      const recordSnap = await getDoc(recordRef);
+      if(recordSnap.exists()) {
+        await updateDoc(recordRef, recordData);
+      } else {
+        await setDoc(recordRef, recordData);
+      }
+    }
+
+    // Fetch student data
+    async function fetchStudentData(email) {
+      try {
+        const studentRef = doc(db, "students", email);
+        const docSnap = await getDoc(studentRef);
+        if (docSnap.exists()) {
+          const studentData = docSnap.data();
+          document.getElementById("email").value = studentData.email || auth.currentUser.email;
+          document.getElementById("name").value = studentData.firstname || "";
+          document.getElementById("surname").value = studentData.surname || "";
+          document.getElementById("phone").value = studentData.phone || "";
+          document.getElementById("parent-name").value = studentData.parentName || "";
+          document.getElementById("parent-phone").value = studentData.parentPhone || "";
+          document.getElementById("dob").value = studentData.dob || "";
+          document.getElementById("gender").value = studentData.gender || "";
+          document.getElementById("address").value = studentData.address || "";
+          document.getElementById("healthIssues").value = studentData.healthIssues || "";
+          document.getElementById("additionalInfo").value = studentData.additionalInfo || "";
+          document.getElementById("form").value = studentData.form || "";
+          document.getElementById("stream").value = studentData.stream || "";
+          document.getElementById("profilePic").src =
+            studentData.profilePic || "https://i.postimg.cc/28gm27sy/2993763.png";
+          document.getElementById("smallProfilePic").src =
+            studentData.profilePic || "https://i.postimg.cc/28gm27sy/2993763.png";
+          const studentName = capitalize(studentData.firstname);
+          document.getElementById("welcomeMessage").textContent = `Hello, ${studentName}`;
+          document.getElementById("personalInfoHeading").textContent = `Personal Information (${studentName})`;
+          if (studentData.form && studentData.stream) {
+            document.getElementById("currentGrade").textContent = `${studentData.form} - ${studentData.stream}`;
+          } else {
+            document.getElementById("currentGrade").textContent = "Not set";
+            showMessage("Your personal info is incomplete. Please update your profile.", "error");
+          }
+        } else {
+          document.getElementById("email").value = auth.currentUser.email;
+          const defaultName = auth.currentUser.email.split('@')[0];
+          document.getElementById("welcomeMessage").textContent = `Hello, ${capitalize(defaultName)}`;
+          document.getElementById("currentGrade").textContent = "Not set";
+          showMessage("Your personal info is incomplete. Please update your profile.", "error");
+        }
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+        showMessage("Error fetching student data: " + error.message, "error");
+      }
+    }
+
+    // Save student data
+    async function saveStudentData() {
+      const saveButton = document.getElementById("saveChangesBtn");
+      try {
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+        const user = auth.currentUser;
+        if (!user) return;
+        const studentRef = doc(db, "students", user.email);
+        const studentData = {
+          email: auth.currentUser.email,
+          firstname: document.getElementById("name").value.trim(),
+          surname: document.getElementById("surname").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          parentName: document.getElementById("parent-name").value.trim(),
+          parentPhone: document.getElementById("parent-phone").value.trim(),
+          dob: document.getElementById("dob").value,
+          gender: document.getElementById("gender").value,
+          address: document.getElementById("address").value.trim(),
+          healthIssues: document.getElementById("healthIssues").value.trim(),
+          additionalInfo: document.getElementById("additionalInfo").value.trim(),
+          form: document.getElementById("form").value,
+          stream: document.getElementById("stream").value,
+          lastUpdated: new Date()
+        };
+        await setDoc(studentRef, studentData, { merge: true });
+        showMessage("Profile updated successfully!", "success");
+        fetchStudentData(user.email);
+      } catch (error) {
+        console.error("Error saving student data:", error);
+        showMessage("Error saving student data: " + error.message, "error");
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Changes";
+      }
+    }
+
+    // Reset password
+    async function resetPassword() {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        showMessage("Password reset email sent! Check your inbox.", "success");
+      } catch (error) {
+        console.error("Error resetting password:", error);
+        showMessage("Error resetting password: " + error.message, "error");
+      }
+    }
+
+    // Load results
+    async function loadResults() {
+      try {
+        const studentEmail = auth.currentUser.email;
+        const studentRef = doc(db, "students", studentEmail);
+        const studentSnap = await getDoc(studentRef);
+        if (studentSnap.exists()) {
+          const studentData = studentSnap.data();
+          
+          // Handle fees/results message
+          if (studentData.feesPaid !== true) {
+            if (studentData.feesBalance && Number(studentData.feesBalance) > 0) {
+              const resultsMessage = document.getElementById("resultsMessage");
+              resultsMessage.innerHTML = `
+                <div class="notice-card" style="background-color: #fff8f8; border-left: 4px solid #ff4757;">
+                  <h4>Pending Fees Balance</h4>
+                  <p>Dear ${studentData.firstname}, you cannot view your results as you have a pending fees balance of $${studentData.feesBalance} 
+                  for ${studentData.year || "N/A"} ${studentData.term || "N/A"}.</p>
+                  <small>Please settle the outstanding amount to access your results.</small>
+                </div>
+              `;
+              document.getElementById("reportCardContainer").style.display = "none";
+              return;
+            } else {
+              const resultsMessage = document.getElementById("resultsMessage");
+              resultsMessage.innerHTML = `
+                <div class="notice-card" style="background-color: #f8f9fa;">
+                  <h4>Results Coming Soon</h4>
+                  <p>Dear ${studentData.firstname}, your results will appear here soon.</p>
+                  <small>Please check back later for your report card.</small>
+                </div>
+              `;
+              if (!studentData.marks || Object.keys(studentData.marks).length === 0) {
+                document.getElementById("reportCardContainer").style.display = "none";
+              } else {
+                document.getElementById("reportCardContainer").style.display = "block";
+              }
+              return;
+            }
+          } else {
+            document.getElementById("resultsMessage").innerHTML = "";
+            document.getElementById("reportCardContainer").style.display = "block";
+            if (studentData.marks && Object.keys(studentData.marks).length > 0 && !studentData.resultsViewed) {
+              Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'New results are out!',
+                showConfirmButton: false,
+                timer: 3000
+              });
+              await updateDoc(studentRef, { resultsViewed: true });
+            }
+          }
+
+          // Display report card
+          document.getElementById("reportName").textContent = `${capitalize(studentData.firstname)} ${capitalize(studentData.surname)}`;
+          document.getElementById("reportEmail").textContent = studentData.email || auth.currentUser.email;
+          document.getElementById("reportYear").textContent = studentData.year || "Not set";
+          document.getElementById("reportTerm").textContent = studentData.term || "Not set";
+          document.getElementById("reportTeacherName").textContent = studentData.teacherName || "N/A";
+          document.getElementById("reportTeacherComments").textContent = studentData.teacherComments || "N/A";
+          
+          const tbody = document.getElementById("reportCardBody");
+          tbody.innerHTML = "";
+          let totalMarks = 0, count = 0;
+          
+          for (const [subject, data] of Object.entries(studentData.marks || {})) {
+            let performanceIcon = "";
+            if (Number(data.marks) >= 90) {
+              performanceIcon = '<i class="fas fa-thumbs-up" style="color: #2ecc71;"></i>';
+            } else if (Number(data.marks) < 60) {
+              performanceIcon = '<i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>';
+            }
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${subject}</td>
+              <td>${data.marks}</td>
+              <td>${data.grade}</td>
+              <td>${performanceIcon}</td>
+            `;
+            tbody.appendChild(row);
+            totalMarks += Number(data.marks);
+            count++;
+          }
+          
+          if (count > 0) {
+            const avg = (totalMarks / count).toFixed(2);
+            const row = document.createElement("tr");
+            row.innerHTML = `<td colspan="4" style="font-weight: bold; background-color: #f8f9fa;">Average Marks: ${avg}%</td>`;
+            tbody.appendChild(row);
+            await storePerformanceRecord(studentData, avg);
+          } else {
+            tbody.innerHTML = "<tr><td colspan='4'>No report card available yet.</td></tr>";
+          }
+          
+          updateChart(studentData.marks || {});
+        } else {
+          document.getElementById("reportCardBody").innerHTML = "<tr><td colspan='4'>No data found.</td></tr>";
+        }
+      } catch (error) {
+        console.error("Error loading results:", error);
+        showMessage("Error loading results: " + error.message, "error");
+      }
+    }
+
+    // Export PDF
+    window.exportPDF = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const name = document.getElementById("reportName").textContent;
+      const email = document.getElementById("reportEmail").textContent;
+      const year = document.getElementById("reportYear").textContent;
+      const term = document.getElementById("reportTerm").textContent;
+      const teacherName = document.getElementById("reportTeacherName").textContent;
+      const teacherComments = document.getElementById("reportTeacherComments").textContent;
+      
+      doc.setFontSize(12);
+      doc.text(`Name: ${name}`, 14, 15);
+      doc.text(`Email: ${email}`, 14, 25);
+      doc.text(`Year: ${year}`, 14, 35);
+      doc.text(`Term: ${term}`, 14, 45);
+      doc.text(`Teacher: ${teacherName}`, 14, 55);
+      doc.text(`Comments: ${teacherComments}`, 14, 65);
+      
+      let rows = [];
+      document.querySelectorAll("#reportCardBody tr").forEach((tr) => {
+        const cells = Array.from(tr.querySelectorAll("td")).map(td => td.textContent);
+        rows.push(cells);
+      });
+      
+      doc.autoTable({
+        head: [["Subject", "Marks", "Grade", "Performance"]],
+        body: rows,
+        startY: 75,
+        styles: {
+          cellPadding: 5,
+          fontSize: 10,
+          valign: 'middle'
+        },
+        headStyles: {
+          fillColor: [0, 51, 102],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        alternateRowStyles: {
+          fillColor: [240, 240, 240]
+        }
+      });
+      
+      const serial = "SN-" + Date.now();
+      const signatureY = doc.lastAutoTable.finalY + 20;
+      doc.setFontSize(10);
+      doc.text("School: St. Mary's High School", 14, signatureY);
+      doc.text("Contact: +263 719 647303", 14, signatureY + 7);
+      doc.text("Address: Zengeza, Mubvumira Rd, Chitungwiza, Zimbabwe", 14, signatureY + 14);
+      doc.text("Serial Number: " + serial, 14, signatureY + 21);
+      
+      doc.save(`${name}_report_card_${term}_${year}.pdf`);
+    };
+
+    // Load notices
+    async function loadNotices() {
+      try {
+        const updatesQuery = query(
+          collection(db, "updates"),
+          orderBy("timestamp", "desc"),
+          limit(1)
+        );
+        const querySnapshot = await getDocs(updatesQuery);
+        let noticeHTML = `<div class="notice-card">
+          <h4>No notices available</h4>
+          <p>Check back later for school announcements.</p>
+        </div>`;
+        
+        querySnapshot.forEach((docSnap) => {
+          const update = docSnap.data();
+          noticeHTML = `
+            <div class="notice-card">
+              <h4>${update.updateTitle || "No title"}</h4>
+              <p>${update.updateContent || ""}</p>
+              <small>Posted by ${update.teacherName || "Unknown"} on ${update.timestamp ? new Date(update.timestamp.seconds * 1000).toLocaleString() : "unknown"}</small>
+            </div>
+          `;
+        });
+        
+        document.getElementById("notices").innerHTML = noticeHTML;
+      } catch (error) {
+        console.error("Error loading notices:", error);
+        document.getElementById("notices").innerHTML = `<div class="notice-card">
+          <h4>Error loading notices</h4>
+          <p>Please try again later.</p>
+        </div>`;
+      }
+    }
+
+    // Load updates
+    async function loadUpdates() {
+      try {
+        const currentEmail = auth.currentUser.email;
+        const updatesQuery = query(
+          collection(db, "updates"),
+          orderBy("timestamp", "desc")
+        );
+        const querySnapshot = await getDocs(updatesQuery);
+        let updatesHtml = "";
+        let unreadCount = 0;
+        
+        querySnapshot.forEach((docSnap) => {
+          const update = docSnap.data();
+          const isRead = update.readBy && update.readBy.includes(currentEmail);
+          if (!isRead) { unreadCount++; }
+          
+          updatesHtml += `
+            <div class="notice-card" data-id="${docSnap.id}" onclick="markUpdateAsRead(this)" style="${isRead ? 'opacity: 0.7;' : ''}">
+              <h4>${update.updateTitle || "No Title"}</h4>
+              <p>${update.updateContent || ""}</p>
+              <small>Posted by ${update.teacherName || "Unknown"} on ${update.timestamp ? new Date(update.timestamp.seconds * 1000).toLocaleString() : "unknown"}</small>
+            </div>
+          `;
+        });
+        
+        document.getElementById("updatesList").innerHTML = updatesHtml || `<div class="notice-card">
+          <p>No updates available.</p>
+        </div>`;
+        
+        const updateCountElem = document.getElementById("updateCount");
+        if (unreadCount > 0) {
+          updateCountElem.textContent = unreadCount;
+          updateCountElem.style.display = "inline-flex";
+        } else {
+          updateCountElem.style.display = "none";
+        }
+      } catch (error) {
+        console.error("Error loading updates:", error);
+        document.getElementById("updatesList").innerHTML = `<div class="notice-card">
+          <p>Error loading updates.</p>
+        </div>`;
+      }
+    }
+
+    // Mark update as read
+    window.markUpdateAsRead = async (updateElem) => {
+      const updateId = updateElem.getAttribute("data-id");
+      const currentEmail = auth.currentUser.email;
+      try {
+        await updateDoc(doc(db, "updates", updateId), { readBy: arrayUnion(currentEmail) });
+        updateElem.style.opacity = "0.7";
+        loadUpdates();
+      } catch (error) {
+        console.error("Error marking update as read:", error);
+      }
+    };
+
+    // Mark all as read
+    document.getElementById("markAllReadBtn").addEventListener("click", async () => {
+      const currentEmail = auth.currentUser.email;
+      const updatesQuery = query(collection(db, "updates"), orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(updatesQuery);
+      
+      querySnapshot.forEach(async (docSnap) => {
+        try {
+          await updateDoc(doc(db, "updates", docSnap.id), { readBy: arrayUnion(currentEmail) });
+        } catch (error) {
+          console.error("Error marking update as read:", error);
+        }
+      });
+      
+      document.getElementById("updateCount").style.display = "none";
+      document.querySelectorAll(".notice-card").forEach(card => {
+        card.style.opacity = "0.7";
+      });
+      
+      showMessage("All updates marked as read!", "success");
+    });
+
+    // Upload profile picture
+    document.getElementById("profilePicInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      const progressContainer = document.getElementById("uploadProgress");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+      
+      progressContainer.style.display = "block";
+      
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percent + "%";
+          progressText.textContent = percent + "%";
+        }
+      };
+      
+      reader.onload = async (event) => {
+        const base64String = event.target.result;
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        const studentRef = doc(db, "students", user.email);
+        try {
+          await updateDoc(studentRef, { profilePic: base64String });
+          document.getElementById("profilePic").src = base64String;
+          document.getElementById("smallProfilePic").src = base64String;
+          showMessage("Profile picture updated!", "success");
+        } catch (error) {
+          console.error("Error updating profile picture:", error);
+          showMessage("Error updating profile picture: " + error.message, "error");
+        }
+        
+        progressBar.style.width = "0%";
+        progressText.textContent = "";
+        progressContainer.style.display = "none";
+      };
+      
+      reader.readAsDataURL(file);
+    });
+
+    // Small profile pic click handler
+    document.getElementById('smallProfilePic').addEventListener('click', function() {
+      document.getElementById('file-input').click();
+    });
+    
+    document.getElementById('file-input').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('smallProfilePic').src = e.target.result;
+          document.getElementById('profilePic').src = e.target.result;
+          const user = auth.currentUser;
+          if (user) {
+            updateDoc(doc(db, "students", user.email), { profilePic: e.target.result });
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Side menu controls
+    const menuBtn = document.getElementById("menuBtn");
+    const sideMenu = document.getElementById("sideMenu");
+    const menuOverlay = document.getElementById("menuOverlay");
+    const closeBtn = document.getElementById("closeBtn");
+    
+    menuBtn.addEventListener("click", () => {
+      sideMenu.classList.add("active");
+      menuOverlay.style.display = "block";
+    });
+    
+    closeBtn.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      menuOverlay.style.display = "none";
+    });
+    
+    menuOverlay.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      menuOverlay.style.display = "none";
+    });
+
+    // Menu navigation
+    const menuLinks = document.querySelectorAll(".menu-links a");
+    menuLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        menuLinks.forEach(l => l.classList.remove("active"));
+        link.classList.add("active");
+        
+        const targetId = link.getAttribute("href").substring(1);
+        document.querySelectorAll("section").forEach((sec) => {
+          sec.style.display = sec.id === targetId ? "block" : "none";
+        });
+        
+        sideMenu.classList.remove("active");
+        menuOverlay.style.display = "none";
+        
+        if (targetId === "updates") {
+          loadUpdates();
+        }
+        if (targetId === "results") {
+          loadResults();
+        }
+        if (targetId === "performance") {
+          loadPerformanceHistory();
+        }
+      });
+    });
+
+    // Load performance history
+    async function loadPerformanceHistory() {
+      try {
+        const currentEmail = auth.currentUser.email;
+        const perfQuery = query(
+          collection(db, "performanceHistory"),
+          where("studentEmail", "==", currentEmail),
+          orderBy("year", "desc"),
+          orderBy("term", "desc")
+        );
+        
+        const querySnapshot = await getDocs(perfQuery);
+        let performanceRecords = [];
+        
+        querySnapshot.forEach((docSnap) => {
+          const record = docSnap.data();
+          performanceRecords.push(record);
+        });
+        
+        const container = document.getElementById("performanceHistoryContainer");
+        if (performanceRecords.length === 0) {
+          container.innerHTML = `<div class="notice-card">
+            <p>No performance records available yet.</p>
+          </div>`;
+        } else {
+          container.innerHTML = "";
+          performanceRecords.forEach(record => {
+            const div = document.createElement("div");
+            div.classList.add("performance-item");
+            div.innerHTML = `
+              <h4>${record.term} ${record.year}</h4>
+              <p><strong>Average:</strong> ${record.average}%</p>
+              <p><strong>Comments:</strong> ${record.comments || "No comments"}</p>
+            `;
+            container.appendChild(div);
+          });
+        }
+        
+        if (performanceRecords.length > 0) {
+          updateOverallPerformanceChart(performanceRecords);
+        }
+        
+        computeAnalytics(performanceRecords);
+      } catch (error) {
+        console.error("Error loading performance history:", error);
+        document.getElementById("performanceHistoryContainer").innerHTML = `<div class="notice-card">
+          <p>Error loading performance history.</p>
+        </div>`;
+      }
+    }
+
+    // Export performance history as PDF
+    window.exportPerformancePDF = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFontSize(16);
+      doc.text("Performance History", 14, 15);
+      doc.setFontSize(12);
+      
+      const name = document.getElementById("reportName").textContent || "Student";
+      const email = document.getElementById("reportEmail").textContent || "";
+      
+      doc.text(`Name: ${name}`, 14, 25);
+      doc.text(`Email: ${email}`, 14, 35);
+      
+      let yPos = 45;
+      const container = document.getElementById("performanceHistoryContainer");
+      const items = container.querySelectorAll(".performance-item");
+      
+      doc.setFontSize(10);
+      items.forEach((item, index) => {
+        if (yPos > 280) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        const text = item.textContent.replace(/\n/g, " ").trim();
+        const lines = doc.splitTextToSize(text, 180);
+        
+        doc.text(lines, 14, yPos);
+        yPos += (lines.length * 7) + 10;
+        
+        if (index < items.length - 1) {
+          doc.line(14, yPos - 5, 200, yPos - 5);
+          yPos += 5;
+        }
+      });
+      
+      doc.save(`${name}_performance_history.pdf`);
+    };
+
+    // Event listeners
+    document.getElementById("saveChangesBtn").addEventListener("click", saveStudentData);
+    document.getElementById("changePasswordBtn").addEventListener("click", resetPassword);
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "/login";
+      } catch (error) {
+        console.error("Error logging out:", error);
+        showMessage("Error logging out: " + error.message, "error");
+      }
+    });
+
+    // Auth state observer
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchStudentData(user.email);
+        loadResults();
+        loadNotices();
+        
+        // Show dashboard by default
+        document.getElementById("dashboard-home").style.display = "block";
+      } else {
+        window.location.href = "/login";
+      }
+    });
+  </script>
+</body>
+</html>
