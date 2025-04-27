@@ -13,24 +13,24 @@
       "dest": "https://github.com/mrfrank-ofc/STM/raw/main/admin/stmarys_application_form.pdf"
     },
     {
-      "src": "/faculty",
-      "dest": "/pages/faculty.html"
+      "src": "/staff",
+      "dest": "/pages/staff.html"
     },
     {
       "src": "/ai",
       "dest": "/pages/ai.html"
     },
     {
-      "src": "/staff",
-      "dest": "/pages/stuff.html"
+      "src": "/dashboard",
+      "dest": "/users/studentd-dashboard.html"
     },
     {
-      "src": "/report",
-      "dest": "/pages/reports.html"
+      "src": "/view",
+      "dest": "/pages/school-view.html"
     },
     {
-      "src": "/viewreports",
-      "dest": "/pages/viewreports.html"
+      "src": "/academics",
+      "dest": "/pages/school-academics.html"
     },
     {
       "src": "/contact",
