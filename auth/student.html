@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | St. Mary's High School</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/4476/4476871.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --accent-color: #4d94ff;
+            --light-color: #ffffff;
+            --dark-color: #121212;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 51, 102, 0.85);
+        }
+        
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background-color: rgba(255, 255, 255, 0.96);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 600px;
+        }
+        
+        .auth-hero {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color), #004080);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -30px;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .school-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .school-logo img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+        
+        .school-logo-text {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .school-logo-text span {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .auth-hero h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        
+        .auth-hero p {
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .auth-features {
+            list-style: none;
+            margin-top: 40px;
+        }
+        
+        .auth-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .auth-features i {
+            color: var(--accent-color);
+            margin-right: 12px;
+            margin-top: 3px;
+            font-size: 1.1rem;
+        }
+        
+        .auth-form-container {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .auth-form-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .auth-form-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .auth-form-header p {
+            color: #666;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 5px;
+        }
+        
+        .auth-tab.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #444;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(77, 148, 255, 0.15);
+            outline: none;
+            background-color: white;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .input-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: var(--primary-color);
+        }
+        
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .forgot-password:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #002244;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-google {
+            background-color: white;
+            color: #444;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn-google:hover {
+            background-color: #f5f5f5;
+            transform: none;
+        }
+        
+        .btn-google i {
+            margin-right: 10px;
+            color: #dd4b39;
+            font-size: 1.1rem;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .auth-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .auth-footer a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        /* Password Strength Meter */
+        .password-strength {
+            height: 5px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        
+        /* Error/Success Messages */
+        .alert {
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+        }
+        
+        .alert i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .alert-error {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--error-color);
+            color: var(--error-color);
+        }
+        
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .auth-card {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .auth-hero {
+                padding: 30px;
+            }
+            
+            .auth-form-container {
+                padding: 40px 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 15px;
+            }
+            
+            .auth-hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .auth-tabs {
+                margin-bottom: 20px;
+            }
+            
+            .auth-tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-hero">
+                <div class="auth-hero-content">
+                    <div class="school-logo">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4476/4476871.png" alt="St. Mary's Logo">
+                        <div class="school-logo-text">St. Mary's <span>High School</span></div>
+                    </div>
+                    
+                    <h2>Student Portal</h2>
+                    <p>Access your grades, assignments, and school resources in one convenient place.</p>
+                    
+                    <ul class="auth-features">
+                        <li>
+                            <i class="fas fa-book-open"></i>
+                            <div>View your class schedule and assignments</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line"></i>
+                            <div>Track your academic progress and grades</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-calendar-alt"></i>
+                            <div>Stay updated with school events and deadlines</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="auth-form-container">
+                <div class="auth-form-header">
+                    <h2>Welcome Students</h2>
+                    <p>Sign in to access your student portal</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Login</div>
+                    <div class="auth-tab" data-tab="register">First Time</div>
+                </div>
+                
+                <!-- Error/Success Messages -->
+                <div class="alert alert-error" id="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div id="error-text">Invalid email or password. Please try again.</div>
+                </div>
+                
+                <div class="alert alert-success" id="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <div>Account created successfully! You can now login.</div>
+                </div>
+                
+                <div class="alert alert-warning" id="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Please verify your email before logging in.</div>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                        <i class="fas fa-eye input-icon" id="toggle-login-password"></i>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-me">
+                            <label for="remember-me">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password" id="forgot-password">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="login-btn">
+                        <span id="login-btn-text">Login</span>
+                        <span id="login-spinner" class="spinner" style="display: none;"></span>
+                    </button>
+                    
+                    <div class="auth-footer">
+                        <p>New student? <a href="#" id="show-register">Activate your account</a></p>
+                    </div>
+                </form>
+                
+                <!-- Registration/Activation Form -->
+                <form id="register-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" class="form-control" placeholder="As it appears on school records" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-email">Email Address</label>
+                        <input type="email" id="register-email" class="form-control" placeholder="yourname@gmail.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-form">Form</label>
+                        <select id="register-form" class="form-control" required>
+                            <option value="">Select your form</option>
+                            <option value="1">Form 1</option>
+                            <option value="2">Form 2</option>
+                            <option value="3">Form 3</option>
+                            <option value="4">Form 4</option>
+                            <option value="5_science">Form 5 (Science)</option>
+                            <option value="5_arts">Form 5 (Arts)</option>
+                            <option value="5_commerce">Form 5 (Commerce)</option>
+                            <option value="6_science">Form 6 (Science)</option>
+                            <option value="6_arts">Form 6 (Arts)</option>
+                            <option value="6_commerce">Form 6 (Commerce)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-class">Class</label>
+                        <select id="register-class" class="form-control" required>
+                            <option value="">Select your class</option>
+                            <option value="G">G</option>
+                            <option value="W">W</option>
+                            <option value="E">E</option>
+                            <option value="Z">Z</option>
+                            <option value="U">U</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-password">Create Password</label>
+                        <input type="password" id="register-password" class="form-control" placeholder="Minimum 8 characters" required>
+                        <i class="fas fa-eye input-icon" id="toggle-register-password"></i>
+                        <div class="password-strength">
+                            <div class="strength-meter" id="password-strength-meter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" class="form-control" placeholder="Re-enter your password" required>
+                        <i class="fas fa-eye input-icon" id="toggle-confirm-password"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="agree-terms" required>
+                        <label for="agree-terms">I agree to the <a href="#">Student Acceptable Use Policy</a></label>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="register-btn">
+                        <span id="register-btn-text">Activate Account</span>
+                        <span id="register-spinner" class="spinner" style="display: none;"></span>
+                    </button>
+                    
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAia39sa6pruiJ0kVmOz7FhoLXdgYs226w",
+            authDomain: "stmarys-db.firebaseapp.com",
+            projectId: "stmarys-db",
+            storageBucket: "stmarys-db.firebasestorage.app",
+            messagingSenderId: "703545528908",
+            appId: "1:703545528908:web:95428a13eaafb572551ae9",
+            measurementId: "G-SCHJJMRCLS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab Switching
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and forms
+                    tabs.forEach(t => t.classList.remove('active'));
+                    forms.forEach(f => f.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding form
+                    this.classList.add('active');
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(`${tabName}-form`).classList.add('active');
+                });
+            });
+            
+            // Show register form link
+            document.getElementById('show-register').addEventListener('click', function(e) {
+                e.preventDefault();
+                tabs[1].click();
+            });
+            
+            // Show login form link
+            document.getElementById('show-login').addEventListener('click', function(e) {
+                e.preventDefault();
+                tabs[0].click();
+            });
+            
+            // Toggle password visibility
+            function setupPasswordToggle(iconId, inputId) {
+                const icon = document.getElementById(iconId);
+                const input = document.getElementById(inputId);
+                
+                icon.addEventListener('click', function() {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            }
+            
+            setupPasswordToggle('toggle-login-password', 'login-password');
+            setupPasswordToggle('toggle-register-password', 'register-password');
+            setupPasswordToggle('toggle-confirm-password', 'register-confirm-password');
+            
+            // Password strength meter
+            const passwordInput = document.getElementById('register-password');
+            const strengthMeter = document.getElementById('password-strength-meter');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                // Length check
+                if (password.length >= 8) strength += 1;
+                
+                // Contains lowercase
+                if (/[a-z]/.test(password)) strength += 1;
+                
+                // Contains uppercase
+                if (/[A-Z]/.test(password)) strength += 1;
+                
+                // Contains number
+                if (/[0-9]/.test(password)) strength += 1;
+                
+                // Contains special char
+                if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+                
+                // Update meter
+                const width = (strength / 5) * 100;
+                strengthMeter.style.width = `${width}%`;
+                
+                // Update color
+                if (strength <= 2) {
+                    strengthMeter.style.backgroundColor = 'var(--error-color)';
+                } else if (strength <= 4) {
+                    strengthMeter.style.backgroundColor = 'var(--warning-color)';
+                } else {
+                    strengthMeter.style.backgroundColor = 'var(--success-color)';
+                }
+            });
+            
+            // Login form submission
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const rememberMe = document.getElementById('remember-me').checked;
+                
+                // Show loading state
+                document.getElementById('login-btn-text').style.display = 'none';
+                document.getElementById('login-spinner').style.display = 'inline-block';
+                
+                // Hide all messages
+                document.querySelectorAll('.alert').forEach(el => el.style.display = 'none');
+                
+                // Set persistence based on remember me
+                const persistence = rememberMe ? 
+                    firebase.auth.Auth.Persistence.LOCAL : 
+                    firebase.auth.Auth.Persistence.SESSION;
+                
+                auth.setPersistence(persistence)
+                    .then(() => {
+                        return auth.signInWithEmailAndPassword(email, password);
+                    })
+                    .then((userCredential) => {
+                        // Check if email is verified
+                        if (userCredential.user.emailVerified) {
+                            // Redirect to student dashboard
+                            window.location.href = 'student-dashboard.html';
+                        } else {
+                            // Show warning for unverified account
+                            document.getElementById('warning-message').style.display = 'flex';
+                            // Send verification email again
+                            return userCredential.user.sendEmailVerification()
+                                .then(() => {
+                                    auth.signOut();
+                                });
+                        }
+                    })
+                    .catch((error) => {
+                        // Handle errors
+                        document.getElementById('error-text').textContent = getAuthErrorMessage(error);
+                        document.getElementById('error-message').style.display = 'flex';
+                        this.classList.add('shake');
+                        setTimeout(() => this.classList.remove('shake'), 500);
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        document.getElementById('login-btn-text').style.display = 'inline';
+                        document.getElementById('login-spinner').style.display = 'none';
+                    });
+            });
+            
+            // Registration form submission
+            document.getElementById('register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const formLevel = document.getElementById('register-form').value;
+                const className = document.getElementById('register-class').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm-password').value;
+                
+                // Validate passwords match
+                if (password !== confirmPassword) {
+                    document.getElementById('error-text').textContent = "Passwords don't match";
+                    document.getElementById('error-message').style.display = 'flex';
+                    return;
+                }
+                
+                // Show loading state
+                document.getElementById('register-btn-text').style.display = 'none';
+                document.getElementById('register-spinner').style.display = 'inline-block';
+                
+                // Hide all messages
+                document.querySelectorAll('.alert').forEach(el => el.style.display = 'none');
+                
+                // Create user in Firebase Auth
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Send email verification
+                        return userCredential.user.sendEmailVerification()
+                            .then(() => {
+                                // Save additional student data to Firestore
+                                return db.collection('students').doc(userCredential.user.uid).set({
+                                    name: name,
+                                    email: email,
+                                    form: formLevel,
+                                    class: className,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    status: 'active'
+                                });
+                            });
+                    })
+                    .then(() => {
+                        // Show success message
+                        document.getElementById('success-message').style.display = 'flex';
+                        this.reset();
+                        strengthMeter.style.width = '0%';
+                        
+                        // Switch to login after 3 seconds
+                        setTimeout(() => {
+                            document.getElementById('success-message').style.display = 'none';
+                            tabs[0].click();
+                        }, 3000);
+                    })
+                    .catch((error) => {
+                        document.getElementById('error-text').textContent = getAuthErrorMessage(error);
+                        document.getElementById('error-message').style.display = 'flex';
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        document.getElementById('register-btn-text').style.display = 'inline';
+                        document.getElementById('register-spinner').style.display = 'none';
+                    });
+            });
+            
+            // Forgot password
+            document.getElementById('forgot-password').addEventListener('click', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value || 
+                    prompt('Please enter your email address to reset your password:');
+                
+                if (email) {
+                    auth.sendPasswordResetEmail(email)
+                        .then(() => {
+                            alert(`Password reset link has been sent to ${email}\n\nPlease check your inbox and follow the instructions.`);
+                        })
+                        .catch((error) => {
+                            alert(getAuthErrorMessage(error));
+                        });
+                }
+            });
+            
+            // Helper function to get user-friendly error messages
+            function getAuthErrorMessage(error) {
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        return 'Please enter a valid email address';
+                    case 'auth/user-disabled':
+                        return 'This account has been disabled';
+                    case 'auth/user-not-found':
+                        return 'No account found with this email';
+                    case 'auth/wrong-password':
+                        return 'Incorrect password';
+                    case 'auth/email-already-in-use':
+                        return 'This email is already registered';
+                    case 'auth/weak-password':
+                        return 'Password should be at least 8 characters';
+                    case 'auth/operation-not-allowed':
+                        return 'Account creation is not allowed';
+                    case 'auth/too-many-requests':
+                        return 'Too many requests. Please try again later';
+                    default:
+                        return error.message || 'An error occurred. Please try again';
+                }
+            }
+
+            // Check if user is already logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    if (user.emailVerified) {
+                        // Redirect to dashboard if email is verified
+                        window.location.href = 'student-dashboard.html';
+                    } else {
+                        // Show warning if email isn't verified
+                        document.getElementById('warning-message').style.display = 'flex';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
