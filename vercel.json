@@ -14,7 +14,7 @@
     },
     {
       "src": "/staff",
-      "dest": "/pages/staff.html"
+      "dest": "/pages/stuff.html"
     },
     {
       "src": "/ai",
@@ -22,7 +22,7 @@
     },
     {
       "src": "/dashboard",
-      "dest": "/users/studentd-dashboard.html"
+      "dest": "/users/student-dashboard.html"
     },
     {
       "src": "/view",
@@ -33,16 +33,16 @@
       "dest": "/pages/school-academics.html"
     },
     {
-      "src": "/contact",
-      "dest": "/pages/contact.html"
+      "src": "/calender",
+      "dest": "/pages/school-calender.html"
     },
     {
-      "src": "/gallery",
-      "dest": "/pages/gallery.html"
+      "src": "/student-auth",
+      "dest": "/auth/student.html"
     },
     {
-      "src": "/apply",
-      "dest": "/pages/student-application.html"
+      "src": "/admin-auth",
+      "dest": "/auth/amin.html"
     },
     {
       "src": "/adminapplication",
