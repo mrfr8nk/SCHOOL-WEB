@@ -42,7 +42,7 @@
     },
     {
       "src": "/admin-auth",
-      "dest": "/auth/amin.html"
+      "dest": "/auth/admin.html"
     },
     {
       "src": "/adminapplication",
